@@ -1,5 +1,11 @@
 package at.windesign.application.views.main;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 import at.windesign.application.views.Series.SeriesView;
@@ -21,6 +27,9 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.StreamResource;
+
+import javax.imageio.ImageIO;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -68,7 +77,9 @@ public class MainView extends AppLayout
 		HorizontalLayout logoLayout = new HorizontalLayout();
 		logoLayout.setId("logo");
 		logoLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
 		logoLayout.add(new Image("images/logo.png", "multimedia logo"));
+
 		logoLayout.add(new H1("multimedia"));
 		layout.add(logoLayout, menu);
 		return layout;

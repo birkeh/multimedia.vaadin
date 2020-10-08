@@ -1,28 +1,6 @@
 package at.windesign.application.data.entity;
 
-/*
-        $sql =  " SELECT	serie.seriesID seriesID," .
-    			" 			serie.seriesName seriesName," .
-    			"           YEAR(serie.firstAired) seriesFirstAired," .
-    			"           serie.resolution seriesResolution," .
-    			"           serie.cliffhanger seriesCliffhanger," .
-    			"           serie.status seriesStatus," .
-     			"           serie.download seriesDownload," .
-    			"           season.seasonNumber seasonNumber," .
-    			"           episode.episodeNumber episodeNumber," .
-                "           episode.state episodeState" .
-    			" FROM		serie" .
-    			" LEFT JOIN	season ON serie.seriesID = season.seriesID" .
-    			" LEFT JOIN	episode ON serie.seriesID = episode.seriesID AND season.seasonNumber = episode.seasonNumber" .
-    			" WHERE     season.seasonNumber != 0 OR" .
-    			"           serie.seriesID >= 1000000 " .
-    			" ORDER BY	serie.seriesName," .
-    			" 			serie.firstAired," .
-    			" 			season.seasonNumber," .
-    			" 			episode.episodeNumber;";
-
- */
-public class Series
+public class Episode
 {
 	private int	seriesID;
 	private String seriesName;
@@ -33,9 +11,9 @@ public class Series
 	private String seriesDownload;
 	private int seasonNumber;
 	private int episodeNumber;
-	private String episodeState;
+	private Integer episodeState;
 
-	public Series(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, int seasonNumber, int episodeNumber, String episodeState)
+	public Episode(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, int seasonNumber, int episodeNumber, Integer episodeState)
 	{
 		super();
 		this.seriesID			= seriesID;
@@ -50,7 +28,7 @@ public class Series
 		this.episodeState		= episodeState;
 	}
 
-	public Series()
+	public Episode()
 	{
 	}
 
@@ -144,12 +122,12 @@ public class Series
 		this.episodeNumber = episodeNumber;
 	}
 
-	public String getEpisodeState()
+	public Integer getEpisodeState()
 	{
 		return episodeState;
 	}
 
-	public void setEpisodeState(String episodeState)
+	public void setEpisodeState(Integer episodeState)
 	{
 		this.episodeState = episodeState;
 	}
