@@ -9,6 +9,8 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -19,12 +21,14 @@ import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.imageio.ImageIO;
+import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -41,13 +45,13 @@ public class SeriesView extends Div implements AfterNavigationObserver
 	private TextField seriesName       = new TextField();
 	private TextField seriesFirstAired = new TextField();
 
-	ByteArrayOutputStream imagebuffer = null;
-	StreamResource        resource;
+	private Integer minSeason = 0;
+	private Integer maxSeason = 0;
+
+	private boolean isInitialized = false;
 
 	public SeriesView()
 	{
-		resource = new StreamResource("image.png", () -> getImageInputStream());
-
 		setId("series-view");
 
 		serie = new Grid<>();
@@ -57,12 +61,6 @@ public class SeriesView extends Div implements AfterNavigationObserver
 		serie.addColumn(Serie::getSeriesFirstAired).setHeader("First Aired");
 		serie.addColumn(Serie::getSeriesResolution).setHeader("Resolution");
 		serie.addColumn(Serie::getSeriesCliffhanger).setHeader("Cliffhanger");
-		serie.addComponentColumn(i -> new Image(resource, "alt text")).setHeader("Preview");
-//		serie.addComponentColumn(i -> new Image(new StreamResource("image.png", () -> getImageInputStream(Serie::getEpisodeState)), "alt text")).setHeader("Preview");
-
-
-		//when a row is selected or deselected, populate form
-		serie.asSingleSelect().addValueChangeListener(event -> populateForm(event.getValue()));
 
 		serie.addItemDoubleClickListener(
 				event ->
@@ -76,11 +74,33 @@ public class SeriesView extends Div implements AfterNavigationObserver
 	@Override
 	public void afterNavigation(AfterNavigationEvent event)
 	{
-		List<Episode>          episodeList  = episodeService.findAll();
-		List<Serie>            serieList    = new ArrayList<>();
-		Episode                lastEpisode  = null;
+		if(!isInitialized)
+		{
+			minSeason = episodeService.minSeason();
+			maxSeason = episodeService.maxSeason();
+
+			if(minSeason < 1)
+				minSeason = 1;
+
+			for(Integer s = minSeason; s <= maxSeason; s++)
+			{
+				final Integer sFinal = s;
+				serie.addComponentColumn(i ->
+				{
+//					StreamResource r   = new StreamResource("image.png", () -> getImageInputStream(sFinal, i.getEpisodeState()));
+//					Image          img = new Image(r, "");
+//					return img;
+					return new Image(new StreamResource("image.png", () -> getImageInputStream(sFinal, i.getEpisodeState())), "");
+				}).setHeader("Season " + sFinal);
+			}
+			isInitialized = true;
+		}
+
+		List<Episode>               episodeList  = episodeService.findAll();
+		List<Serie>                 serieList    = new ArrayList<>();
+		Episode                     lastEpisode  = null;
 		SortedMap<Integer, Integer> episodeState = new TreeMap<>();
-		int                    oldID        = -1;
+		int                         oldID        = -1;
 
 		for(Episode e : episodeList)
 		{
@@ -88,63 +108,73 @@ public class SeriesView extends Div implements AfterNavigationObserver
 			{
 				if(oldID != -1)
 				{
-					serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState));
-					episodeState.clear();
+					serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
+					episodeState = new TreeMap<>();
 				}
 
 				lastEpisode = e;
 				oldID = e.getSeriesID();
 			}
-			episodeState.put(e.getSeasonNumber() << 8 + e.getEpisodeNumber(), e.getEpisodeState());
+			episodeState.put((e.getSeasonNumber() << 8) + e.getEpisodeNumber(), e.getEpisodeState());
 		}
 		if(oldID != -1)
-			serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState));
+			serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
 
 		serie.setItems(serieList);
 	}
 
-	private void populateForm(Serie value)
+	private InputStream getImageInputStream(Integer curSeason, SortedMap<Integer, Integer> state)
 	{
-		if(value == null)
-		{
-			value = new Serie();
-		}
-	}
+		ByteArrayOutputStream imagebuffer = null;
+		Integer               season      = -1;
+		Integer               episode     = -1;
+		boolean               found       = false;
 
-//	private InputStream getImageInputStream(SortedMap<Integer, Integer> state)
-	private InputStream getImageInputStream()
-	{
-//		int           reloads  = state.firstKey();
-		int           reloads  = 1;
-		BufferedImage image    = new BufferedImage(400, 400, BufferedImage.TYPE_INT_RGB);
+		for(Integer key : state.keySet())
+		{
+			season = key >> 8;
+			episode = key & 0xFF;
+
+			if(season == curSeason)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if(!found)
+		{
+			BufferedImage image    = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+			Graphics2D    drawable = image.createGraphics();
+
+			drawable.setColor(Color.WHITE);
+			drawable.fillRect(0, 0, 1, 1);
+
+			try
+			{
+				imagebuffer = new ByteArrayOutputStream();
+				ImageIO.write(image, "png", imagebuffer);
+				return new ByteArrayInputStream(imagebuffer.toByteArray());
+			} catch(IOException e)
+			{
+				return null;
+			}
+		}
+
+		BufferedImage image    = new BufferedImage(100, 10, BufferedImage.TYPE_INT_RGB);
 		Graphics2D    drawable = image.createGraphics();
 
-		// Draw something static
-		drawable.setStroke(new BasicStroke(5));
 		drawable.setColor(Color.WHITE);
-		drawable.fillRect(0, 0, 400, 400);
+		drawable.fillRect(0, 0, 100, 10);
 		drawable.setColor(Color.BLACK);
-		drawable.drawOval(50, 50, 300, 300);
-
-		// Draw something dynamic
-		drawable.setFont(new Font("Montserrat",
-				Font.PLAIN, 48));
-		drawable.drawString("Reloads=" + reloads, 75, 216);
-		reloads++;
-		drawable.setColor(new Color(0, 165, 235));
-		int x = (int) (200 - 10 + 150 * Math.sin(reloads * 0.3));
-		int y = (int) (200 - 10 + 150 * Math.cos(reloads * 0.3));
-		drawable.fillOval(x, y, 20, 20);
+		drawable.drawString("S" + season + "E" + episode, 5, 10);
 
 		try
 		{
-			// Write the image to a buffer
 			imagebuffer = new ByteArrayOutputStream();
 			ImageIO.write(image, "png", imagebuffer);
 
-			// Return a stream from the buffer
-			return new ByteArrayInputStream(
-					imagebuffer.toByteArray());
+			return new ByteArrayInputStream(imagebuffer.toByteArray());
 		} catch(IOException e)
 		{
 			return null;

@@ -1,5 +1,7 @@
 package at.windesign.application.data.entity;
 
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 
 import javax.imageio.ImageIO;
@@ -14,16 +16,18 @@ import java.util.SortedMap;
 
 public class Serie
 {
-	private int     seriesID;
-	private String  seriesName;
-	private int     seriesFirstAired;
-	private String  seriesResolution;
-	private boolean seriesCliffhanger;
-	private String  seriesStatus;
-	private String  seriesDownload;
-	SortedMap<Integer, Integer> episodeState;
+	private int                         seriesID;
+	private String                      seriesName;
+	private int                         seriesFirstAired;
+	private String                      seriesResolution;
+	private boolean                     seriesCliffhanger;
+	private String                      seriesStatus;
+	private String                      seriesDownload;
+	private SortedMap<Integer, Integer> episodeState;
+	private int                         minSeason;
+	private int                         maxSeason;
 
-	public Serie(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, SortedMap<Integer, Integer> episodeState)
+	public Serie(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, SortedMap<Integer, Integer> episodeState, int minSeason, int maxSeason)
 	{
 		super();
 		this.seriesID = seriesID;
@@ -34,6 +38,8 @@ public class Serie
 		this.seriesStatus = seriesStatus;
 		this.seriesDownload = seriesDownload;
 		this.episodeState = episodeState;
+		this.minSeason = minSeason;
+		this.maxSeason = maxSeason;
 	}
 
 	public Serie()
@@ -118,6 +124,26 @@ public class Serie
 	public void setEpisodeState(SortedMap<Integer, Integer> episodeState)
 	{
 		this.episodeState = episodeState;
+	}
+
+	public int getMinSeason()
+	{
+		return minSeason;
+	}
+
+	public void setMinSeason(int minSeason)
+	{
+		this.minSeason = minSeason;
+	}
+
+	public int getMaxSeason()
+	{
+		return maxSeason;
+	}
+
+	public void setMaxSeason(int maxSeason)
+	{
+		this.maxSeason = maxSeason;
 	}
 
 	@Override

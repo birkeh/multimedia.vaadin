@@ -2,30 +2,34 @@ package at.windesign.application.data.entity;
 
 public class Episode
 {
-	private int	seriesID;
-	private String seriesName;
-	private int seriesFirstAired;
-	private String seriesResolution;
+	private int     seriesID;
+	private String  seriesName;
+	private int     seriesFirstAired;
+	private String  seriesResolution;
 	private boolean seriesCliffhanger;
-	private String seriesStatus;
-	private String seriesDownload;
-	private int seasonNumber;
-	private int episodeNumber;
+	private String  seriesStatus;
+	private String  seriesDownload;
+	private int     seasonNumber;
+	private int     episodeNumber;
 	private Integer episodeState;
+	private int     minSeason;
+	private int     maxSeason;
 
-	public Episode(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, int seasonNumber, int episodeNumber, Integer episodeState)
+	public Episode(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, int seasonNumber, int episodeNumber, Integer episodeState, int minSeason, int maxSeason)
 	{
 		super();
-		this.seriesID			= seriesID;
-		this.seriesName			= seriesName;
-		this.seriesFirstAired	= seriesFirstAired;
-		this.seriesResolution	= seriesResolution;
-		this.seriesCliffhanger	= seriesCliffhanger;
-		this.seriesStatus		= seriesStatus;
-		this.seriesDownload		= seriesDownload;
-		this.seasonNumber		= seasonNumber;
-		this.episodeNumber		= episodeNumber;
-		this.episodeState		= episodeState;
+		this.seriesID = seriesID;
+		this.seriesName = seriesName;
+		this.seriesFirstAired = seriesFirstAired;
+		this.seriesResolution = seriesResolution;
+		this.seriesCliffhanger = seriesCliffhanger;
+		this.seriesStatus = seriesStatus;
+		this.seriesDownload = seriesDownload;
+		this.seasonNumber = seasonNumber;
+		this.episodeNumber = episodeNumber;
+		this.episodeState = episodeState;
+		this.minSeason = minSeason;
+		this.maxSeason = maxSeason;
 	}
 
 	public Episode()
@@ -130,6 +134,26 @@ public class Episode
 	public void setEpisodeState(Integer episodeState)
 	{
 		this.episodeState = episodeState;
+	}
+
+	public int getMinSeason()
+	{
+		return minSeason;
+	}
+
+	public void setMinSeason(int minSeason)
+	{
+		this.minSeason = minSeason;
+	}
+
+	public int getMaxSeason()
+	{
+		return maxSeason;
+	}
+
+	public void setMaxSeason(int maxSeason)
+	{
+		this.maxSeason = maxSeason;
 	}
 
 	@Override
