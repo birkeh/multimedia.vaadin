@@ -19,6 +19,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import javax.imageio.ImageIO;
 import javax.xml.transform.stream.StreamSource;
@@ -50,6 +52,9 @@ public class SeriesView extends Div implements AfterNavigationObserver
 
 	private boolean isInitialized = false;
 
+	private Integer stateWidth  = 4;
+	private Integer stateHeight = 20;
+
 	public SeriesView()
 	{
 		setId("series-view");
@@ -57,16 +62,20 @@ public class SeriesView extends Div implements AfterNavigationObserver
 		serie = new Grid<>();
 		serie.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 		serie.setHeightFull();
-		serie.addColumn(Serie::getSeriesName).setHeader("Series Name");
+		serie.addColumn(TemplateRenderer.<Serie>of("<div style$=\"[[item.style]]\">[[item.name]]</div>")
+				.withProperty("name", Serie::getSeriesName)
+				.withProperty("style", Serie::getSeriesStyle))
+				.setHeader("Series Name");
 		serie.addColumn(Serie::getSeriesFirstAired).setHeader("First Aired");
 		serie.addColumn(Serie::getSeriesResolution).setHeader("Resolution");
-		serie.addColumn(Serie::getSeriesCliffhanger).setHeader("Cliffhanger");
 
 		serie.addItemDoubleClickListener(
 				event ->
 				{
 					Notification.show("Clicked Item: " + event.getItem());
 				});
+
+		serie.getColumns().forEach(col -> col.setAutoWidth(true));
 
 		add(serie);
 	}
@@ -87,9 +96,6 @@ public class SeriesView extends Div implements AfterNavigationObserver
 				final Integer sFinal = s;
 				serie.addComponentColumn(i ->
 				{
-//					StreamResource r   = new StreamResource("image.png", () -> getImageInputStream(sFinal, i.getEpisodeState()));
-//					Image          img = new Image(r, "");
-//					return img;
 					return new Image(new StreamResource("image.png", () -> getImageInputStream(sFinal, i.getEpisodeState())), "");
 				}).setHeader("Season " + sFinal);
 			}
@@ -125,10 +131,10 @@ public class SeriesView extends Div implements AfterNavigationObserver
 
 	private InputStream getImageInputStream(Integer curSeason, SortedMap<Integer, Integer> state)
 	{
-		ByteArrayOutputStream imagebuffer = null;
-		Integer               season      = -1;
-		Integer               episode     = -1;
-		boolean               found       = false;
+		ByteArrayOutputStream       imagebuffer = null;
+		Integer                     season      = -1;
+		Integer                     episode     = -1;
+		SortedMap<Integer, Integer> seasonState = new TreeMap<>();
 
 		for(Integer key : state.keySet())
 		{
@@ -136,13 +142,12 @@ public class SeriesView extends Div implements AfterNavigationObserver
 			episode = key & 0xFF;
 
 			if(season == curSeason)
-			{
-				found = true;
+				seasonState.put(episode, state.get(key));
+			else if(season > curSeason)
 				break;
-			}
 		}
 
-		if(!found)
+		if(seasonState.size() == 0)
 		{
 			BufferedImage image    = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 			Graphics2D    drawable = image.createGraphics();
@@ -161,13 +166,38 @@ public class SeriesView extends Div implements AfterNavigationObserver
 			}
 		}
 
-		BufferedImage image    = new BufferedImage(100, 10, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image    = new BufferedImage(stateWidth * seasonState.lastKey(), stateHeight, BufferedImage.TYPE_INT_RGB);
 		Graphics2D    drawable = image.createGraphics();
+		Color         colGrey  = new Color(192, 192, 192);
+		Color         colBlue  = new Color(0, 0, 192);
+		Color         colGreen = new Color(0, 192, 0);
+		Color         colBlack = new Color(0, 0, 0);
+		Color         col      = colBlack;
 
-		drawable.setColor(Color.WHITE);
-		drawable.fillRect(0, 0, 100, 10);
-		drawable.setColor(Color.BLACK);
-		drawable.drawString("S" + season + "E" + episode, 5, 10);
+		drawable.setColor(colBlack);
+		drawable.fillRect(0, 0, stateWidth * seasonState.lastKey(), stateHeight);
+
+		for(Integer key : seasonState.keySet())
+		{
+			switch(seasonState.get(key))
+			{
+				case 0:
+					col = colBlack;
+					break;
+				case 1:
+					col = colGrey;
+					break;
+				case 2:
+					col = colBlue;
+					break;
+				case 3:
+					col = colGreen;
+					break;
+			}
+
+			drawable.setColor(col);
+			drawable.fillRect((key - 1) * stateWidth, 0, stateWidth - 1, stateHeight);
+		}
 
 		try
 		{

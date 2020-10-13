@@ -37,3 +37,37 @@
   background-color: var(--lumo-contrast-5pct);
   padding: var(--lumo-space-s) var(--lumo-space-l);
 }
+
+.v-grid-cell.red {
+    color: red;
+}
+
+.v-grid-cell.yellow {
+    color: yellow;
+}
+
+.v-grid-cell.green {
+    color: green;
+}
+
+[part~="cell"].success {
+  background: green;
+}
+
+.success {
+  background: green;
+}
+
+.v-grid-cell.success {
+    color: green;
+}
+
+.error {
+  color: red;
+}
+
+series-cliffhanger
+
+series-cliffhanger-open
+
+series-open

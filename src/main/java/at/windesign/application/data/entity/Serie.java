@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedMap;
 
 public class Serie
@@ -144,6 +145,19 @@ public class Serie
 	public void setMaxSeason(int maxSeason)
 	{
 		this.maxSeason = maxSeason;
+	}
+
+	public String getSeriesStyle()
+	{
+		String style = "";
+
+		if(seriesCliffhanger)
+			style = style + "font-style: italic; ";
+
+		if(Objects.equals(seriesStatus, "Returning Series"))
+			style = style + "font-weight: bold; ";
+
+		return style;
 	}
 
 	@Override
