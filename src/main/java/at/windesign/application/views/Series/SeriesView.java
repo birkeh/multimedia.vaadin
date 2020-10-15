@@ -23,16 +23,15 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import javax.imageio.ImageIO;
+import javax.naming.directory.SearchResult;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Route(value = "series", layout = MainView.class)
 @PageTitle("TV Shows")
@@ -65,8 +64,8 @@ public class SeriesView extends Div implements AfterNavigationObserver
 		serie.addColumn(TemplateRenderer.<Serie>of("<div style$=\"[[item.style]]\">[[item.name]]</div>")
 				.withProperty("name", Serie::getSeriesName)
 				.withProperty("style", Serie::getSeriesStyle))
-				.setHeader("Series Name");
-		serie.addColumn(Serie::getSeriesFirstAired).setHeader("First Aired");
+				.setHeader("Series Name").setFrozen(true);
+		serie.addColumn(Serie::getSeriesFirstAired).setHeader("First Aired").setFrozen(true);
 		serie.addColumn(Serie::getSeriesResolution).setHeader("Resolution");
 
 		serie.addItemDoubleClickListener(
@@ -124,7 +123,9 @@ public class SeriesView extends Div implements AfterNavigationObserver
 			episodeState.put((e.getSeasonNumber() << 8) + e.getEpisodeNumber(), e.getEpisodeState());
 		}
 		if(oldID != -1)
+		{
 			serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
+		}
 
 		serie.setItems(serieList);
 	}

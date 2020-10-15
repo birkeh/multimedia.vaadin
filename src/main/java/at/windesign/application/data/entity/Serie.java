@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Serie
 {

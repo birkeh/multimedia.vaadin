@@ -34,7 +34,7 @@ public class EpisodeService
 							" LEFT JOIN	season ON serie.seriesID = season.seriesID" +
 							" LEFT JOIN	episode ON serie.seriesID = episode.seriesID AND season.seasonNumber = episode.seasonNumber" +
 							" WHERE     season.seasonNumber != 0 OR" +
-							"           serie.seriesID >= 1000000 " +
+							"           serie.seriesID >= 1000000" +
 							" ORDER BY	serie.seriesName," +
 							" 			serie.firstAired," +
 							" 			season.seasonNumber," +
