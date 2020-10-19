@@ -3,11 +3,15 @@ package at.windesign.application.views.movies;
 import at.windesign.application.data.entity.Movie;
 import at.windesign.application.data.service.MovieService;
 import at.windesign.application.views.main.MainView;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -28,10 +32,17 @@ public class MoviesView extends Div implements AfterNavigationObserver
 	private TextField     movieTitle = new TextField();
 	private TextField     originalTitle  = new TextField();
 
+	private TextArea	textArea = new TextArea();
+
 	public MoviesView()
 	{
 		setId("movies-view");
 
+		this.getElement().getStyle().set( "background-image" , "url('images/logo.png')" );
+
+		textArea.setValue("blabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla \nblabla");
+		add(textArea);
+/*
 		movies = new Grid<>();
 		movies.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 		movies.setHeightFull();
@@ -50,19 +61,23 @@ public class MoviesView extends Div implements AfterNavigationObserver
 				});
 
 		add(movies);
+*/
 	}
+
 
 	@Override
 	public void afterNavigation(AfterNavigationEvent event)
 	{
-		movies.setItems(movieService.findAll());
+//		movies.setItems(movieService.findAll());
 	}
 
 	private void populateForm(Movie value)
 	{
+/*
 		if(value == null)
 		{
 			value = new Movie();
 		}
+*/
 	}
 }

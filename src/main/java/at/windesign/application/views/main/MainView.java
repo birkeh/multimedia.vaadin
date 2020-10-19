@@ -1,11 +1,5 @@
 package at.windesign.application.views.main;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 import at.windesign.application.views.Series.SeriesView;
@@ -27,9 +21,7 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.server.StreamResource;
-
-import javax.imageio.ImageIO;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -40,8 +32,9 @@ import javax.imageio.ImageIO;
 //@Theme(value = Lumo.class, variant = Lumo.LIGHT)
 public class MainView extends AppLayout
 {
-	private final Tabs menu;
-	private       H1   viewTitle;
+	private final Tabs         menu;
+	private       H1           viewTitle;
+	private       Registration listener;
 
 	public MainView()
 	{
@@ -99,7 +92,7 @@ public class MainView extends AppLayout
 	{
 		return new Tab[]{
 				createTab("TVShows", SeriesView.class),
-				createTab("Movies", MoviesView.class),
+				createTab("Movies", MoviesView.class)
 				};
 	}
 
@@ -131,4 +124,5 @@ public class MainView extends AppLayout
 	{
 		return getContent().getClass().getAnnotation(PageTitle.class).value();
 	}
+
 }

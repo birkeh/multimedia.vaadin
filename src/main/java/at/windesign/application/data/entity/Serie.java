@@ -18,30 +18,34 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Serie
 {
-	private int                         seriesID;
-	private String                      seriesName;
-	private int                         seriesFirstAired;
-	private String                      seriesResolution;
-	private boolean                     seriesCliffhanger;
-	private String                      seriesStatus;
-	private String                      seriesDownload;
-	private SortedMap<Integer, Integer> episodeState;
-	private int                         minSeason;
-	private int                         maxSeason;
+	private int                         m_seriesID;
+	private String                      m_seriesName;
+	private int                         m_seriesFirstAired;
+	private String                      m_seriesResolution;
+	private boolean                     m_seriesCliffhanger;
+	private String                      m_seriesStatus;
+	private String                      m_seriesDownload;
+	private String                      m_seriesPoster;
+	private String                      m_seriesBackdrop;
+	private SortedMap<Integer, Integer> m_episodeState;
+	private int                         m_minSeason;
+	private int                         m_maxSeason;
 
-	public Serie(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, SortedMap<Integer, Integer> episodeState, int minSeason, int maxSeason)
+	public Serie(int seriesID, String seriesName, int seriesFirstAired, String seriesResolution, boolean seriesCliffhanger, String seriesStatus, String seriesDownload, String seriesPoster, String seriesBackdrop, SortedMap<Integer, Integer> episodeState, int minSeason, int maxSeason)
 	{
 		super();
-		this.seriesID = seriesID;
-		this.seriesName = seriesName;
-		this.seriesFirstAired = seriesFirstAired;
-		this.seriesResolution = seriesResolution;
-		this.seriesCliffhanger = seriesCliffhanger;
-		this.seriesStatus = seriesStatus;
-		this.seriesDownload = seriesDownload;
-		this.episodeState = episodeState;
-		this.minSeason = minSeason;
-		this.maxSeason = maxSeason;
+		m_seriesID = seriesID;
+		m_seriesName = seriesName;
+		m_seriesFirstAired = seriesFirstAired;
+		m_seriesResolution = seriesResolution;
+		m_seriesCliffhanger = seriesCliffhanger;
+		m_seriesStatus = seriesStatus;
+		m_seriesDownload = seriesDownload;
+		m_seriesPoster = seriesPoster;
+		m_seriesBackdrop = seriesBackdrop;
+		m_episodeState = episodeState;
+		m_minSeason = minSeason;
+		m_maxSeason = maxSeason;
 	}
 
 	public Serie()
@@ -50,112 +54,132 @@ public class Serie
 
 	public int getSeriesID()
 	{
-		return seriesID;
+		return m_seriesID;
 	}
 
 	public void setSeriesID(int seriesID)
 	{
-		this.seriesID = seriesID;
+		m_seriesID = seriesID;
 	}
 
 	public String getSeriesName()
 	{
-		return seriesName;
+		return m_seriesName;
 	}
 
 	public void setSeriesName(String seriesName)
 	{
-		this.seriesName = seriesName;
+		m_seriesName = seriesName;
 	}
 
 	public int getSeriesFirstAired()
 	{
-		return seriesFirstAired;
+		return m_seriesFirstAired;
 	}
 
 	public void setSeriesFirstAired(int seriesFirstAired)
 	{
-		this.seriesFirstAired = seriesFirstAired;
+		m_seriesFirstAired = seriesFirstAired;
 	}
 
 	public String getSeriesResolution()
 	{
-		return seriesResolution;
+		return m_seriesResolution;
 	}
 
 	public void setSeriesResolution(String seriesResolution)
 	{
-		this.seriesResolution = seriesResolution;
+		m_seriesResolution = seriesResolution;
 	}
 
 	public boolean getSeriesCliffhanger()
 	{
-		return seriesCliffhanger;
+		return m_seriesCliffhanger;
 	}
 
 	public void setSeriesCliffhanger(boolean seriesCliffhanger)
 	{
-		this.seriesCliffhanger = seriesCliffhanger;
+		m_seriesCliffhanger = seriesCliffhanger;
 	}
 
 	public String getSeriesStatus()
 	{
-		return seriesStatus;
+		return m_seriesStatus;
 	}
 
 	public void setSeriesStatus(String seriesStatus)
 	{
-		this.seriesStatus = seriesStatus;
+		m_seriesStatus = seriesStatus;
 	}
 
 	public String getSeriesDownload()
 	{
-		return seriesDownload;
+		return m_seriesDownload;
 	}
 
 	public void setSeriesDownload(String seriesDownload)
 	{
-		this.seriesDownload = seriesDownload;
+		m_seriesDownload = seriesDownload;
+	}
+
+	public String getSeriesPoster()
+	{
+		return m_seriesPoster;
+	}
+
+	public void setSeriesPoster(String seriesPoster)
+	{
+		m_seriesPoster = seriesPoster;
+	}
+
+	public String getSeriesBackdrop()
+	{
+		return m_seriesBackdrop;
+	}
+
+	public void setSeriesBackdrop(String seriesBackdrop)
+	{
+		m_seriesBackdrop = seriesBackdrop;
 	}
 
 	public SortedMap<Integer, Integer> getEpisodeState()
 	{
-		return episodeState;
+		return m_episodeState;
 	}
 
 	public void setEpisodeState(SortedMap<Integer, Integer> episodeState)
 	{
-		this.episodeState = episodeState;
+		m_episodeState = episodeState;
 	}
 
 	public int getMinSeason()
 	{
-		return minSeason;
+		return m_minSeason;
 	}
 
 	public void setMinSeason(int minSeason)
 	{
-		this.minSeason = minSeason;
+		m_minSeason = minSeason;
 	}
 
 	public int getMaxSeason()
 	{
-		return maxSeason;
+		return m_maxSeason;
 	}
 
 	public void setMaxSeason(int maxSeason)
 	{
-		this.maxSeason = maxSeason;
+		m_maxSeason = maxSeason;
 	}
 
 	public String getSeriesStyle()
 	{
 		String style = "";
 
-		if(seriesCliffhanger)
+		if(m_seriesCliffhanger)
 			style = style + "font-style: italic; ";
 
-		if(Objects.equals(seriesStatus, "Returning Series"))
+		if(Objects.equals(m_seriesStatus, "Returning Series"))
 			style = style + "font-weight: bold; ";
 
 		return style;
@@ -164,6 +188,6 @@ public class Serie
 	@Override
 	public String toString()
 	{
-		return String.valueOf(seriesID);
+		return String.valueOf(m_seriesID);
 	}
 }

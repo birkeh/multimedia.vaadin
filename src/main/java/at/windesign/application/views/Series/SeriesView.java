@@ -4,13 +4,15 @@ import at.windesign.application.data.entity.Episode;
 import at.windesign.application.data.entity.Serie;
 import at.windesign.application.data.service.EpisodeService;
 import at.windesign.application.views.main.MainView;
+import com.vaadin.flow.component.ClickNotifier;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.AfterNavigationEvent;
@@ -19,19 +21,16 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.component.dialog.Dialog;
 
 import javax.imageio.ImageIO;
-import javax.naming.directory.SearchResult;
-import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 @Route(value = "series", layout = MainView.class)
 @PageTitle("TV Shows")
@@ -54,9 +53,13 @@ public class SeriesView extends Div implements AfterNavigationObserver
 	private Integer stateWidth  = 4;
 	private Integer stateHeight = 20;
 
+	private SeriesEditDialog seriesEditDialog;
+
 	public SeriesView()
 	{
 		setId("series-view");
+
+		this.getElement().getStyle().set( "background-image" , "url('images/logo.png')" );
 
 		serie = new Grid<>();
 		serie.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -71,7 +74,11 @@ public class SeriesView extends Div implements AfterNavigationObserver
 		serie.addItemDoubleClickListener(
 				event ->
 				{
-					Notification.show("Clicked Item: " + event.getItem());
+					UI.getCurrent().getPage().retrieveExtendedClientDetails(details ->
+					{
+						seriesEditDialog = new SeriesEditDialog(details.getBodyClientWidth(), details.getBodyClientHeight(), event.getItem());
+						seriesEditDialog.open();
+					});
 				});
 
 		serie.getColumns().forEach(col -> col.setAutoWidth(true));
@@ -113,7 +120,7 @@ public class SeriesView extends Div implements AfterNavigationObserver
 			{
 				if(oldID != -1)
 				{
-					serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
+					serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), lastEpisode.getSeriesPoster(), lastEpisode.getSeriesBackdrop(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
 					episodeState = new TreeMap<>();
 				}
 
@@ -124,7 +131,7 @@ public class SeriesView extends Div implements AfterNavigationObserver
 		}
 		if(oldID != -1)
 		{
-			serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
+			serieList.add(new Serie(lastEpisode.getSeriesID(), lastEpisode.getSeriesName(), lastEpisode.getSeriesFirstAired(), lastEpisode.getSeriesResolution(), lastEpisode.getSeriesCliffhanger(), lastEpisode.getSeriesStatus(), lastEpisode.getSeriesDownload(), lastEpisode.getSeriesPoster(), lastEpisode.getSeriesBackdrop(), episodeState, lastEpisode.getMinSeason(), lastEpisode.getMaxSeason()));
 		}
 
 		serie.setItems(serieList);
